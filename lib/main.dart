@@ -22,7 +22,44 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomeRiverPod(),
+      home: const Main(),
+    );
+  }
+}
+
+class Main extends ConsumerStatefulWidget {
+  const Main({Key? key}) : super(key: key);
+  @override
+  ConsumerState<Main> createState() => _MainState();
+}
+
+class _MainState extends ConsumerState<Main> {
+  @override
+  void initState() {
+    super.initState();
+    final name = ref.read(nameProvider);
+    print("initState => $name");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var name = ref.watch(nameProvider);
+    var title = ref.watch(titleProvider);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: Text(
+              name,
+              style: const TextStyle(fontSize: 46),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
