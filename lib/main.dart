@@ -2,14 +2,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final nameProvider = Provider<String>((ref) => 'Hello Hakan');
-final titleProvider = Provider<String>((ref) => 'RiverPod Examples');
+final titleProvider = Provider<String>((ref) => 'State Provider');
+final countProvider = StateProvider<int>((ref) => 0);
 
 void main() {
   runApp(
     const ProviderScope(
-      child: MyApp(),
+      child: MaterialApp(
+        home: MyHomePage(),
+      ),
     ),
   );
+}
+
+class MyHomePage extends ConsumerWidget {
+  const MyHomePage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final title = ref.watch(titleProvider);
+    final count = ref.watch(countProvider);
+
+    ref.listen(countProvider, ((previous, next) {
+      if (next == 5) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("The Value is $next")));
+      }
+    }));
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        actions: [
+          IconButton(
+              onPressed: () {
+                // reset to provider
+                //ref.invalidate(countProvider);
+                // or
+                ref.refresh(countProvider);
+              },
+              icon: const Icon(Icons.refresh))
+        ],
+      ),
+      body: Center(
+        child: Text(
+          "$count",
+          style: const TextStyle(fontSize: 50),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          //ref.read(countProvider.notifier).state++;
+          ref.read(countProvider.notifier).update((state) => state + 1);
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
